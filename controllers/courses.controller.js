@@ -10,7 +10,7 @@ const getAllCourses = asyncWrapper(
         const limit = req.query.limit || 2;
         const page = req.query.page || 1;
         const skip = (page - 1) * limit;
-        const courses = await Course.find({},{"__v":false}).limit(limit).skip(skip);
+        const courses = await Course.find({},{"__v":false}).populate("user","email role").limit(limit).skip(skip);
         res.json({status:SUCCESS,data:{courses}});
     }
 )
@@ -18,7 +18,7 @@ const getAllCourses = asyncWrapper(
 //get course by id
 const getCourseById = asyncWrapper(
     async (req,res,next)=>{
-        const course = await Course.findById(req.params.courseId.trim());
+        const course = await Course.findById(req.params.courseId.trim()).populate("user");
         if(!course){
             const error = AppError.create("Course not found",404,FAIL);
             return next(error);
